@@ -1,0 +1,40 @@
+working program
+import cv2
+
+# Callback function for mouse events
+def get_color(event, x, y, flags, param):
+    global clicked, r, g, b
+    if event == cv2.EVENT_LBUTTONDOWN:
+        clicked = True
+        b, g, r = map(int, frame[y, x])  # Get color at clicked point and ensure they are integers
+
+# Initialize variables
+clicked = False
+r = g = b = 0
+
+# Open webcam
+cap = cv2.VideoCapture(0)
+cv2.namedWindow("Webcam Feed")
+cv2.setMouseCallback("Webcam Feed", get_color)
+
+while True:
+    ret, frame = cap.read()
+    if not ret:
+        print("Failed to capture frame. Exiting.")
+        break
+
+    # Display the detected color name and RGB values
+    if clicked:
+        text = f"R: {r}, G: {g}, B: {b}"
+        cv2.putText(frame, text, (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
+        cv2.rectangle(frame, (10, 70), (110, 130), (b, g, r), -1)  # Show detected color
+
+    # Show the live video feed
+    cv2.imshow("Webcam Feed", frame)
+
+    # Quit with 'q'
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+cap.release()
+cv2.destroyAllWindows()
